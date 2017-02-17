@@ -1,15 +1,16 @@
 {
-  "name": "mup",
+  "name": "mup-auto-nginx",
   "version": "1.2.2",
   "description": "Production Quality Meteor Deployments",
   "main": "lib/index.js",
   "bin": {
-    "mup": "./index.js"
+    "meteor-deploy": "./index.js"
   },
   "scripts": {
     "prepublish": "nofat make",
     "test": "nofat test",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "babel src -d lib"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,8 @@
   },
   "homepage": "https://github.com/kadirahq/meteor-up#readme",
   "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-preset-env": "^1.1.8",
     "eslint": "^3.15.0",
     "nofat": "1.0.x"
   },

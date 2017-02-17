@@ -30,7 +30,7 @@ echo "Pulled <%= docker.image %>"
 docker run \
   -d \
   --restart=always \
-  <% if(sslConfig && typeof sslConfig.autogenerate === "object")  { %> \
+  <% if((sslConfig && typeof sslConfig.autogenerate === "object") || setupVirtualHost)  { %> \
   --expose=80 \
   <% } else { %> \
   --publish=$PORT:80 \
@@ -38,13 +38,13 @@ docker run \
   --volume=$BUNDLE_PATH:/bundle \
   --hostname="$HOSTNAME-$APPNAME" \
   --env-file=$ENV_FILE \
-  <% if(useLocalMongo)  { %>--link=mongodb:mongodb --env=MONGO_URL=mongodb://mongodb:27017/$APPNAME <% } %>\
+  <% if(!!mongoName)  { %>--link=mongodb:mongodb --env=MONGO_URL=mongodb://mongodb:27017/<%= mongoName %> <% } %>\
   <% if(logConfig && logConfig.driver)  { %>--log-driver=<%= logConfig.driver %> <% } %>\
   <% for(var option in logConfig.opts) { %>--log-opt <%= option %>=<%= logConfig.opts[option] %> <% } %>\
   <% for(var volume in volumes) { %>-v <%= volume %>:<%= volumes[volume] %> <% } %>\
   <% for(var args in docker.args) { %> <%= docker.args[args] %> <% } %>\
   <% if(sslConfig && typeof sslConfig.autogenerate === "object")  { %> \
-    -e "VIRTUAL_HOST=<%= sslConfig.autogenerate.domains %>" \
+    -e "VIRTUAL_HOST=<%= virtualHosts %>" \
     -e "LETSENCRYPT_HOST=<%= sslConfig.autogenerate.domains %>" \
     -e "LETSENCRYPT_EMAIL=<%= sslConfig.autogenerate.email %>" \
   <% } %> \
@@ -58,13 +58,13 @@ sleep 15s
     echo "Running autogenerate"
     # Get the nginx template for nginx-gen
     wget https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl -O /opt/$APPNAME/config/nginx.tmpl
-    
+
     # Update nginx config based on user input or default passed by js
 sudo cat <<EOT > /opt/$APPNAME/config/nginx-default.conf
 client_max_body_size $CLIENTSIZE;
 EOT
-    
-    
+
+
     # We don't need to fail the deployment because of a docker hub downtime
     set +e
     docker pull jrcs/letsencrypt-nginx-proxy-companion:latest

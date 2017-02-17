@@ -10,6 +10,8 @@ const schema = joi.object().keys({
   deployCheckWaitTime: joi.number(),
   enableUploadProgressBar: joi.bool(),
   dockerImage: joi.string(),
+  setupVirtualHost: joi.bool(),
+  mongoName: joi.string(),
   docker: joi.object().keys({
     image: joi.string().trim(),
     imageFrontendServer: joi.string(),

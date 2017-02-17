@@ -133,7 +133,9 @@ export function push(api) {
         logConfig: config.log,
         volumes: config.volumes,
         docker: config.docker,
-        nginxClientUploadLimit: config.nginx.clientUploadLimit || '10M'
+        nginxClientUploadLimit: config.nginx.clientUploadLimit || '10M',
+        setupVirtualHost: !!config.setupVirtualHost,
+        mongoName: config.mongoName,
       }
     });
 
